@@ -32,7 +32,7 @@ Additional information: http://esp-idf.readthedocs.io/en/latest/api-reference/pe
 																								Thijs Vandenryt 2018
 */
 #include "driver/DAC.h" 	 //Required to use the DAC outputs
-
+#include <driver/touch_pad.h>   //Required for touch functionality
 
 #define MAX_CAP_VAL 1500	//Maximum recorded value for the given belt (can be collected in a calibration routine: e.g. 3x max depth inhalation
 #define MIN_CAP_VAL 1200	//Lowest value recorded for the given belt/patient
