@@ -32,6 +32,7 @@ Additional information: http://esp-idf.readthedocs.io/en/latest/api-reference/pe
 
 																								Thijs Vandenryt 2018
 */
+#include <Arduino.h>				//Required for Arduino IDE
 #include "driver/DAC.h" 	 		//Required to use the DAC outputs
 #include <driver/touch_pad.h>   	//Required for touch functionality
 
@@ -40,6 +41,12 @@ Additional information: http://esp-idf.readthedocs.io/en/latest/api-reference/pe
 #define DelayTimeMS 90				//Time between new capcitive datapoints
 #define TOUCHPIN TOUCH_PAD_NUM5		//Num5==GPIO12
 
+//Function prototypes
+void PrintVoltageSettings(void);		//Prints the excitation voltage settings
+void PrintThresholdSettings(void);
+void PrintSlopeSettings(void);
+void PrintMeasTimeSettings(void);
+void DacCycle(void);			//Cycles the output of the DAC for 1s, to show the start of the output.
 
 void setup()
 {
@@ -147,12 +154,15 @@ void PrintVoltageSettings(void)		//Prints the excitation voltage settings
 	Serial.print(", VoltAtten "); Serial.println(VoltAtten);
 }
 
+
+
 void PrintThresholdSettings(void) {
 	uint16_t retval = 100;
 
 	Serial.print("Threshold: Status "); Serial.print(touch_pad_get_thresh(TOUCHPIN, &retval));
 	Serial.print(", Threshold "); 	Serial.println(retval);
 }
+
 
 void PrintSlopeSettings(void) {
 	uint16_t retval = 100, retval2 = 100;
