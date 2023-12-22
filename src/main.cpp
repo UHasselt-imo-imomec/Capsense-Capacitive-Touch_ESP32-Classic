@@ -49,20 +49,19 @@ void PrintSlopeSettings(void);
 void PrintMeasTimeSettings(void);
 void DacCycle(void);			//Cycles the output of the DAC for 1s, to show the start of the output.
 
-void setup()
-{
+void setup(){
 	Serial.begin(115200);
 	dac_output_enable(DAC_CHANNEL_1);			//Enable DAC1 == GPIO 25
 	
-	Serial.println("\n\n\n\n Touch sensor init.");
+	Serial.println(F("\n\n\n\n Touch sensor init."));
 	if (touch_pad_init()) {
-		Serial.println("!!!!Init ERROR");
+		Serial.println(F("[ERROR] Init failed"));
 	}
 
 	touch_pad_config(TOUCHPIN, 0);			
 
 	if (touch_pad_filter_start(10)) {				//Setup filter setup (10ms filter duration)
-		Serial.println("!!!!Filter Start ERROR");
+		Serial.println(F("[ERROR] Filter Start failed."));
 	}
 }
 
@@ -76,19 +75,19 @@ void loop()
 	PrintThresholdSettings();
 
 	if (touch_pad_set_cnt_mode(TOUCHPIN, TOUCH_PAD_SLOPE_7, TOUCH_PAD_TIE_OPT_LOW)) { //slope_1: Slowest ,7 fastest, 4 Default
-		Serial.println("!!!!Slope setting ERROR");
+		Serial.println(F("[ERROR] Slope setting failed"));
 	}
 
 	PrintSlopeSettings();
 
 	if (touch_pad_set_voltage(TOUCH_HVOLT_2V4, TOUCH_LVOLT_0V8, TOUCH_HVOLT_ATTEN_1V5)) {//0,3,3   --> Check att voltages, now 0 att.
-		Serial.println("!!!!Voltage setting ERROR");
+		Serial.println(F("[ERROR] Voltage setting ERROR"));
 	}
 
 	delay(10);		//wait for settings to be applied
 	PrintVoltageSettings();
 	PrintMeasTimeSettings();
-	Serial.println("--------------------\n\n\n");    //Separate header from data
+	Serial.println(F("--------------------\n\n\n"));    //Separate header from data
 	
 	void DacCycle(void);		//Cycle the DAC for 1s to show µC is ready to read data.
 	
@@ -97,7 +96,7 @@ void loop()
 		if (TempTime+DelayTimeMS <= (millis())) {     //If DelayTimeMS has elapsed, new datapoint is read
 			if (touch_pad_read_filtered(TOUCHPIN, &ReadVal[0])) {	//Raw data is read 
 																		//if(touch_pad_read_filtered(TOUCHPIN,&ReadVal){		//Filtered data is read--> Needs initialisation with "touch_pad_filter_start(Filter_time_in_ms)"
-				Serial.println("Read filtered value error");
+				Serial.println(F("Read filtered value error"));
 			}
 			else if (ReadVal[0] == ReadVal[1]){		//No update is neccessary
 				DataRDY = 0;
@@ -131,8 +130,8 @@ void loop()
 
 			//Analog output of the relative capacity
 			if (dac_output_voltage(DAC_CHANNEL_1, ReadVal[0]) != ESP_OK) {
-				Serial.print("Error setting the DAC voltage at ");
-				Serial.print(ReadVal[0]); Serial.println(".");
+				Serial.print(F("[Error] Setting the DAC voltage failed at "));
+				Serial.print(ReadVal[0]); Serial.println('.');
 			}
 			DataRDY = 0;
 		}
@@ -147,11 +146,11 @@ void PrintVoltageSettings(void)		//Prints the excitation voltage settings
 	uint8_t VoltL = 100;
 	uint8_t VoltAtten = 100;
 
-	Serial.print("Voltages: Status ");
+	Serial.print(F("Voltages: Status "));
 	Serial.print(touch_pad_get_voltage((touch_high_volt_t*)&VoltH, (touch_low_volt_t*)&VoltL, (touch_volt_atten_t*)&VoltAtten));
-	Serial.print(", VoltH "); Serial.print(VoltH);
-	Serial.print(", VoltL "); Serial.print(VoltL);
-	Serial.print(", VoltAtten "); Serial.println(VoltAtten);
+	Serial.print(F(", VoltH ")); Serial.print(VoltH);
+	Serial.print(F(", VoltL ")); Serial.print(VoltL);
+	Serial.print(F(", VoltAtten ")); Serial.println(VoltAtten);
 }
 
 
@@ -159,28 +158,28 @@ void PrintVoltageSettings(void)		//Prints the excitation voltage settings
 void PrintThresholdSettings(void) {
 	uint16_t retval = 100;
 
-	Serial.print("Threshold: Status "); Serial.print(touch_pad_get_thresh(TOUCHPIN, &retval));
-	Serial.print(", Threshold "); 	Serial.println(retval);
+	Serial.print(F("Threshold: Status ")); Serial.print(touch_pad_get_thresh(TOUCHPIN, &retval));
+	Serial.print(F(", Threshold ")); 	Serial.println(retval);
 }
 
 
 void PrintSlopeSettings(void) {
 	uint16_t retval = 100, retval2 = 100;
 
-	Serial.print("Slope: Status "); Serial.print(touch_pad_get_cnt_mode(TOUCHPIN, (touch_cnt_slope_t*)&retval, (touch_tie_opt_t*)&retval2));
-	Serial.print(", Slope "); Serial.print(retval);
-	Serial.print(", Init Voltage "); Serial.println(retval2);
+	Serial.print(F("Slope: Status ")); Serial.print(touch_pad_get_cnt_mode(TOUCHPIN, (touch_cnt_slope_t*)&retval, (touch_tie_opt_t*)&retval2));
+	Serial.print(F(", Slope ")); Serial.print(retval);
+	Serial.print(F(", Init Voltage ")); Serial.println(retval2);
 }
 
 
 void PrintMeasTimeSettings(void) {
 	uint16_t sleep_cycleVal = 100, meas_cycleVal = 100;
 
-	Serial.print("Get Measurement Time: Status ");
+	Serial.print(F("Get Measurement Time: Status "));
 	Serial.print(touch_pad_get_meas_time(&sleep_cycleVal, &meas_cycleVal));
-	Serial.print(", NumOfSleepCycles ");
+	Serial.print(F(", NumOfSleepCycles "));
 	Serial.print(sleep_cycleVal);
-	Serial.print(", Measurements Cycles: ");
+	Serial.print(F(", Measurements Cycles: "));
 	Serial.println(meas_cycleVal);
 }
 
